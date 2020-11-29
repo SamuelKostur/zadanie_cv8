@@ -11,8 +11,31 @@ char curStr[NUM_DIG];
 char complStr[] = "Samuel_Kostur_92610";
 uint8_t complStrLen = 19;
 
+const uint8_t segVal_ASCII[75]= {
+/*  0     1     2     3     4     5     6     7     8     9     :     ;     */
+    0x7E, 0x30, 0x6D, 0x79, 0x33, 0x5B, 0x5F, 0x70, 0x7F, 0x7B, 0x00, 0x00,
+/*  <     =     >     ?     @     A     B     C     D     E     F     G     */
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x77, 0x7C, 0x4E, 0x3D, 0x4F, 0x47, 0x5E,
+/*  H     I     J     K     L     M     N     O     P     Q     R     S     */
+    0x37, 0x06, 0x3C, 0x57, 0x0E, 0x6A, 0x15, 0x7E, 0x67, 0x73, 0x05, 0x5B,
+/*  T     U     V     W     X     Y     Z     [     \     ]     ^     _     */
+	0x0F, 0x3E, 0x2A, 0x7F, 0x49, 0x3B, 0x6D, 0x00, 0x00, 0x00, 0x00, 0x08,
+/*  `     a     b     c     d     e     f     g     h     i     j     k     */
+    0x00, 0x7D, 0x1F, 0x0D, 0x3D, 0x00, 0x00, 0x00, 0x17, 0x00, 0x00, 0x00,
+/*  l     m     n     o     p     q     r     s     t     u     v     w     */
+    0x00, 0x00, 0x15, 0x1D, 0x00, 0x73, 0x05, 0x00, 0x0F, 0x1C, 0x00, 0x00,
+/*  x     y     z     */
+    0x00, 0x3B, 0x00
+};
+
+GPIO_TypeDef* seg_Ports[] = {seg_A_Port,seg_B_Port,seg_C_Port,seg_D_Port,seg_E_Port,seg_F_Port,seg_G_Port};
+uint32_t seg_Pins[] = {seg_A_Pin,seg_B_Pin,seg_C_Pin,seg_D_Pin,seg_E_Pin,seg_F_Pin,seg_G_Pin};
+
+GPIO_TypeDef* dig_Ports[] = {dig_1_Port,dig_2_Port,dig_3_Port,dig_4_Port};
+uint32_t dig_Pins[] = {dig_1_Pin,dig_2_Pin,dig_3_Pin,dig_4_Pin};
+
 //functions to handle multiplexing of the currently displaying alphanum char
-void updAlphanumChar(char* seg_Val);
+void updAlphanumChar(uint8_t seg_Val);
 void setDigit(uint8_t pos);
 void resAllSegments();
 void resAllDigits();
@@ -22,39 +45,38 @@ void updCurPos(uint8_t *prevPos, uint8_t shiftDir);
 void updShiftDir(uint8_t curPos, uint8_t *shiftDir);
 void setCurStr(uint8_t curPos);
 
+//functions to handle multiplexing of the currently displaying alphanum char
 void DISPLAY_displayCurStr(){
-	static int curActDig = 1;
+	static uint8_t curActDig = 0;
 	resAllDigits();
 
-	switch (curStr[curActDig]){
-		case 'A':
-			updAlphanumChar(A_segVal);
-			break;
-		default:
-			resAllDigits();
-	}
-
-	setDigit(curActDig);
+	updAlphanumChar( segVal_ASCII[ toupper(curStr[curActDig]) - '0'] );
+	setDigit(curActDig % 4);
 	curActDig++;
-	if(curActDig>=4){
-		curActDig = 0;
-	}
 }
 
-void updAlphanumChar(char* segmentValues){
+void updAlphanumChar(uint8_t segmentValues){
 	resAllSegments();
-	if(segmentValues[0] == '1') LL_GPIO_SetOutputPin(seg_A_Port, seg_A_Pin);
-	if(segmentValues[1] == '1') LL_GPIO_SetOutputPin(seg_B_Port, seg_B_Pin);
-	if(segmentValues[2] == '1') LL_GPIO_SetOutputPin(seg_C_Port, seg_C_Pin);
-	if(segmentValues[3] == '1') LL_GPIO_SetOutputPin(seg_D_Port, seg_D_Pin);
-	if(segmentValues[4] == '1') LL_GPIO_SetOutputPin(seg_E_Port, seg_E_Pin);
-	if(segmentValues[5] == '1') LL_GPIO_SetOutputPin(seg_F_Port, seg_F_Pin);
-	if(segmentValues[6] == '1') LL_GPIO_SetOutputPin(seg_G_Port, seg_G_Pin);
-	if(segmentValues[7] == '1') LL_GPIO_SetOutputPin(seg_DP_Port, seg_DP_Pin);
+	for(int i = 0; i<(NUM_SEG-1); i++){
+		if(segmentValues & 1<<i) LL_GPIO_ResetOutputPin(seg_Ports[i], seg_Pins[i]);
+	}
+	/*
+	if(segmentValues & 1<<0) LL_GPIO_ResetOutputPin(seg_A_Port, seg_A_Pin);
+	if(segmentValues & 1<<2) LL_GPIO_ResetOutputPin(seg_B_Port, seg_B_Pin);
+	if(segmentValues & 1<<3) LL_GPIO_ResetOutputPin(seg_C_Port, seg_C_Pin);
+	if(segmentValues & 1<<4) LL_GPIO_ResetOutputPin(seg_D_Port, seg_D_Pin);
+	if(segmentValues & 1<<5) LL_GPIO_ResetOutputPin(seg_E_Port, seg_E_Pin);
+	if(segmentValues & 1<<6) LL_GPIO_ResetOutputPin(seg_F_Port, seg_F_Pin);
+	if(segmentValues & 1<<7) LL_GPIO_ResetOutputPin(seg_G_Port, seg_G_Pin);
+	if(segmentValues & 1<<8) LL_GPIO_ResetOutputPin(seg_DP_Port, seg_DP_Pin);
+	*/
 }
 
 //Turns required digit ON
 void setDigit(uint8_t pos){
+	LL_GPIO_SetOutputPin(dig_Ports[pos], dig_Pins[pos]);
+
+	/*
 	switch(pos){
 		case 0:
 			DIGIT_4_ON;
@@ -69,10 +91,15 @@ void setDigit(uint8_t pos){
 			DIGIT_1_ON;
 			break;
 	}
+	*/
 }
 
 /*Reset (turn-off) all the segments of display*/
 void resAllSegments(){
+	for(int i = 0; i<(NUM_SEG-1); i++){
+		LL_GPIO_SetOutputPin(seg_Ports[i], seg_Pins[i]);
+	}
+	/*
 	LL_GPIO_SetOutputPin(seg_A_Port, seg_A_Pin);
 	LL_GPIO_SetOutputPin(seg_B_Port, seg_B_Pin);
 	LL_GPIO_SetOutputPin(seg_C_Port, seg_C_Pin);
@@ -81,15 +108,21 @@ void resAllSegments(){
 	LL_GPIO_SetOutputPin(seg_F_Port, seg_F_Pin);
 	LL_GPIO_SetOutputPin(seg_G_Port, seg_G_Pin);
 	LL_GPIO_SetOutputPin(seg_DP_Port, seg_DP_Pin);
+	*/
 }
 
 /* Reset (turn-off) all digits*/
 void resAllDigits(void)
 {
+	for(int i = 0; i<(NUM_DIG-1); i++){
+		LL_GPIO_ResetOutputPin(dig_Ports[i], dig_Pins[i]);
+	}
+	/*
 	LL_GPIO_ResetOutputPin(dig_1_Port, dig_1_Pin);
 	LL_GPIO_ResetOutputPin(dig_2_Port, dig_2_Pin);
 	LL_GPIO_ResetOutputPin(dig_3_Port, dig_3_Pin);
 	LL_GPIO_ResetOutputPin(dig_4_Port, dig_4_Pin);
+	*/
 }
 
 //Functions to handle shifting of the currently displaying string

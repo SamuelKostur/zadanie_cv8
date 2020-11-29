@@ -85,6 +85,8 @@ void Error_Handler(void);
 #define digit_1_GPIO_Port GPIOA
 #define digit_3_Pin LL_GPIO_PIN_6
 #define digit_3_GPIO_Port GPIOA
+#define digit_time_Pin LL_GPIO_PIN_7
+#define digit_time_GPIO_Port GPIOA
 #define segment_DP_Pin LL_GPIO_PIN_1
 #define segment_DP_GPIO_Port GPIOB
 #define segment_C_Pin LL_GPIO_PIN_8

@@ -10,6 +10,7 @@
 #endif*/ /* INC_DISPLAY_H_ */
 #include <stdio.h>
 #include "stm32f3xx_ll_gpio.h"
+#include <ctype.h>
 
 #define NUM_DIG 4 //number of display digs
 #define NUM_SEG 8 //number of segments per digit
@@ -38,19 +39,19 @@
 #define dig_2_Pin LL_GPIO_PIN_4
 #define dig_3_Pin LL_GPIO_PIN_6
 #define dig_4_Pin LL_GPIO_PIN_2
+#define dig_time_Pin LL_GPIO_PIN_7
 
 #define dig_1_Port GPIOA
 #define dig_2_Port GPIOA
 #define dig_3_Port GPIOA
 #define dig_4_Port GPIOA
+#define dig_time_Port GPIOA
 
-#define DIGIT_1_ON		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5)
-#define DIGIT_2_ON		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_4)
-#define DIGIT_3_ON		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6)
-#define DIGIT_4_ON		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_2)
-#define DIGIT_TIME_ON	LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_7)
-
-#define A_segVal "1110111"
+#define DIGIT_1_ON		LL_GPIO_SetOutputPin(dig_1_Port, dig_1_Pin)
+#define DIGIT_2_ON		LL_GPIO_SetOutputPin(dig_2_Port, dig_2_Pin)
+#define DIGIT_3_ON		LL_GPIO_SetOutputPin(dig_3_Port, dig_3_Pin)
+#define DIGIT_4_ON		LL_GPIO_SetOutputPin(dig_4_Port, dig_4_Pin)
+#define DIGIT_TIME_ON	LL_GPIO_SetOutputPin(dig_time_Port, dig_time_Pin)
 
 //functions
 void DISPLAY_displayCurStr();
