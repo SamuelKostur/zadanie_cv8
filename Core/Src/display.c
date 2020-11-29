@@ -12,6 +12,8 @@ char complStr[] = "Samuel_Kostur_92610";
 uint8_t complStrLen = 19;
 
 const uint8_t segVal_ASCII[75]= {
+
+		// 0b DABC DEFG
 /*  0     1     2     3     4     5     6     7     8     9     :     ;     */
     0x7E, 0x30, 0x6D, 0x79, 0x33, 0x5B, 0x5F, 0x70, 0x7F, 0x7B, 0x00, 0x00,
 /*  <     =     >     ?     @     A     B     C     D     E     F     G     */
@@ -58,7 +60,7 @@ void DISPLAY_displayCurStr(){
 void updAlphanumChar(uint8_t segmentValues){
 	resAllSegments();
 	for(int i = 0; i<(NUM_SEG-1); i++){
-		if(segmentValues & 1<<i) LL_GPIO_ResetOutputPin(seg_Ports[i], seg_Pins[i]);
+		if(segmentValues & (1<<i)) LL_GPIO_ResetOutputPin(seg_Ports[i], seg_Pins[i]);
 	}
 }
 
@@ -69,7 +71,7 @@ void setDigit(uint8_t pos){
 
 /*Reset (turn-off) all the segments of display*/
 void resAllSegments(){
-	for(int i = 0; i<(NUM_SEG-1); i++){
+	for(int i = 0; i < NUM_SEG; i++){
 		LL_GPIO_SetOutputPin(seg_Ports[i], seg_Pins[i]);
 	}
 }
@@ -77,7 +79,7 @@ void resAllSegments(){
 /* Reset (turn-off) all digits*/
 void resAllDigits(void)
 {
-	for(int i = 0; i<(NUM_DIG-1); i++){
+	for(int i = 0; i < NUM_DIG; i++){
 		LL_GPIO_ResetOutputPin(dig_Ports[i], dig_Pins[i]);
 	}
 }
