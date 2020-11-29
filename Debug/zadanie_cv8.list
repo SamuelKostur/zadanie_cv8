@@ -35,15 +35,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  15 .debug_ranges 000004b8  00000000  00000000  00026c48  2**3
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_macro  00016b39  00000000  00000000  00027100  2**0
+ 16 .debug_macro  00016b1b  00000000  00000000  00027100  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_line   0000407d  00000000  00000000  0003dc39  2**0
+ 17 .debug_line   00004075  00000000  00000000  0003dc1b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    000783c6  00000000  00000000  00041cb6  2**0
+ 18 .debug_str    000782aa  00000000  00000000  00041c90  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      0000007b  00000000  00000000  000ba07c  2**0
+ 19 .comment      0000007b  00000000  00000000  000b9f3a  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000015a0  00000000  00000000  000ba0f8  2**2
+ 20 .debug_frame  000015a0  00000000  00000000  000b9fb8  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -220,11 +220,7 @@ void updAlphanumChar(uint8_t segmentValues){
  80002b0:	68fb      	ldr	r3, [r7, #12]
  80002b2:	2b06      	cmp	r3, #6
  80002b4:	dde6      	ble.n	8000284 <updAlphanumChar+0x14>
-	if(segmentValues & 1<<5) LL_GPIO_ResetOutputPin(seg_E_Port, seg_E_Pin);
-	if(segmentValues & 1<<6) LL_GPIO_ResetOutputPin(seg_F_Port, seg_F_Pin);
-	if(segmentValues & 1<<7) LL_GPIO_ResetOutputPin(seg_G_Port, seg_G_Pin);
-	if(segmentValues & 1<<8) LL_GPIO_ResetOutputPin(seg_DP_Port, seg_DP_Pin);
-	*/
+	}
 }
  80002b6:	bf00      	nop
  80002b8:	3710      	adds	r7, #16
@@ -252,11 +248,6 @@ void setDigit(uint8_t pos){
  80002de:	f852 3023 	ldr.w	r3, [r2, r3, lsl #2]
  80002e2:	4619      	mov	r1, r3
  80002e4:	f7ff ff70 	bl	80001c8 <LL_GPIO_SetOutputPin>
-		case 3:
-			DIGIT_1_ON;
-			break;
-	}
-	*/
 }
  80002e8:	bf00      	nop
  80002ea:	3708      	adds	r7, #8
@@ -292,11 +283,7 @@ void resAllSegments(){
  8000320:	687b      	ldr	r3, [r7, #4]
  8000322:	2b06      	cmp	r3, #6
  8000324:	ddee      	ble.n	8000304 <resAllSegments+0xc>
-	LL_GPIO_SetOutputPin(seg_E_Port, seg_E_Pin);
-	LL_GPIO_SetOutputPin(seg_F_Port, seg_F_Pin);
-	LL_GPIO_SetOutputPin(seg_G_Port, seg_G_Pin);
-	LL_GPIO_SetOutputPin(seg_DP_Port, seg_DP_Pin);
-	*/
+	}
 }
  8000326:	bf00      	nop
  8000328:	3708      	adds	r7, #8
@@ -334,11 +321,7 @@ void resAllDigits(void)
  8000360:	687b      	ldr	r3, [r7, #4]
  8000362:	2b02      	cmp	r3, #2
  8000364:	ddee      	ble.n	8000344 <resAllDigits+0xc>
-	LL_GPIO_ResetOutputPin(dig_1_Port, dig_1_Pin);
-	LL_GPIO_ResetOutputPin(dig_2_Port, dig_2_Pin);
-	LL_GPIO_ResetOutputPin(dig_3_Port, dig_3_Pin);
-	LL_GPIO_ResetOutputPin(dig_4_Port, dig_4_Pin);
-	*/
+	}
 }
  8000366:	bf00      	nop
  8000368:	3708      	adds	r7, #8

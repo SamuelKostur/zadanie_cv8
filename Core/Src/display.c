@@ -60,38 +60,11 @@ void updAlphanumChar(uint8_t segmentValues){
 	for(int i = 0; i<(NUM_SEG-1); i++){
 		if(segmentValues & 1<<i) LL_GPIO_ResetOutputPin(seg_Ports[i], seg_Pins[i]);
 	}
-	/*
-	if(segmentValues & 1<<0) LL_GPIO_ResetOutputPin(seg_A_Port, seg_A_Pin);
-	if(segmentValues & 1<<2) LL_GPIO_ResetOutputPin(seg_B_Port, seg_B_Pin);
-	if(segmentValues & 1<<3) LL_GPIO_ResetOutputPin(seg_C_Port, seg_C_Pin);
-	if(segmentValues & 1<<4) LL_GPIO_ResetOutputPin(seg_D_Port, seg_D_Pin);
-	if(segmentValues & 1<<5) LL_GPIO_ResetOutputPin(seg_E_Port, seg_E_Pin);
-	if(segmentValues & 1<<6) LL_GPIO_ResetOutputPin(seg_F_Port, seg_F_Pin);
-	if(segmentValues & 1<<7) LL_GPIO_ResetOutputPin(seg_G_Port, seg_G_Pin);
-	if(segmentValues & 1<<8) LL_GPIO_ResetOutputPin(seg_DP_Port, seg_DP_Pin);
-	*/
 }
 
 //Turns required digit ON
 void setDigit(uint8_t pos){
 	LL_GPIO_SetOutputPin(dig_Ports[pos], dig_Pins[pos]);
-
-	/*
-	switch(pos){
-		case 0:
-			DIGIT_4_ON;
-			break;
-		case 1:
-			DIGIT_3_ON;
-			break;
-		case 2:
-			DIGIT_2_ON;
-			break;
-		case 3:
-			DIGIT_1_ON;
-			break;
-	}
-	*/
 }
 
 /*Reset (turn-off) all the segments of display*/
@@ -99,16 +72,6 @@ void resAllSegments(){
 	for(int i = 0; i<(NUM_SEG-1); i++){
 		LL_GPIO_SetOutputPin(seg_Ports[i], seg_Pins[i]);
 	}
-	/*
-	LL_GPIO_SetOutputPin(seg_A_Port, seg_A_Pin);
-	LL_GPIO_SetOutputPin(seg_B_Port, seg_B_Pin);
-	LL_GPIO_SetOutputPin(seg_C_Port, seg_C_Pin);
-	LL_GPIO_SetOutputPin(seg_D_Port, seg_D_Pin);
-	LL_GPIO_SetOutputPin(seg_E_Port, seg_E_Pin);
-	LL_GPIO_SetOutputPin(seg_F_Port, seg_F_Pin);
-	LL_GPIO_SetOutputPin(seg_G_Port, seg_G_Pin);
-	LL_GPIO_SetOutputPin(seg_DP_Port, seg_DP_Pin);
-	*/
 }
 
 /* Reset (turn-off) all digits*/
@@ -117,12 +80,6 @@ void resAllDigits(void)
 	for(int i = 0; i<(NUM_DIG-1); i++){
 		LL_GPIO_ResetOutputPin(dig_Ports[i], dig_Pins[i]);
 	}
-	/*
-	LL_GPIO_ResetOutputPin(dig_1_Port, dig_1_Pin);
-	LL_GPIO_ResetOutputPin(dig_2_Port, dig_2_Pin);
-	LL_GPIO_ResetOutputPin(dig_3_Port, dig_3_Pin);
-	LL_GPIO_ResetOutputPin(dig_4_Port, dig_4_Pin);
-	*/
 }
 
 //Functions to handle shifting of the currently displaying string

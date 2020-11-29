@@ -47,12 +47,6 @@
 #define dig_4_Port GPIOA
 #define dig_time_Port GPIOA
 
-#define DIGIT_1_ON		LL_GPIO_SetOutputPin(dig_1_Port, dig_1_Pin)
-#define DIGIT_2_ON		LL_GPIO_SetOutputPin(dig_2_Port, dig_2_Pin)
-#define DIGIT_3_ON		LL_GPIO_SetOutputPin(dig_3_Port, dig_3_Pin)
-#define DIGIT_4_ON		LL_GPIO_SetOutputPin(dig_4_Port, dig_4_Pin)
-#define DIGIT_TIME_ON	LL_GPIO_SetOutputPin(dig_time_Port, dig_time_Pin)
-
 //functions
 void DISPLAY_displayCurStr();
 void DISPLAY_shiftCurStr();
