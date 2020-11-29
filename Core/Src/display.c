@@ -7,10 +7,11 @@
 #include "display.h"
 
 //global variables
-char curStr[NUM_DIG];
+uint8_t curStr[NUM_DIG-1];
 char complStr[] = "Samuel_Kostur_92610";
 uint8_t complStrLen = 19;
 
+// 0b dABC DEFG
 const uint8_t segVal_ASCII[75]= {
 /*  0     1     2     3     4     5     6     7     8     9     :     ;     */
     0x7E, 0x30, 0x6D, 0x79, 0x33, 0x5B, 0x5F, 0x70, 0x7F, 0x7B, 0x00, 0x00,
@@ -28,57 +29,58 @@ const uint8_t segVal_ASCII[75]= {
     0x00, 0x3B, 0x00
 };
 
-GPIO_TypeDef* seg_Ports[] = {seg_A_Port,seg_B_Port,seg_C_Port,seg_D_Port,seg_E_Port,seg_F_Port,seg_G_Port};
-uint32_t seg_Pins[] = {seg_A_Pin,seg_B_Pin,seg_C_Pin,seg_D_Pin,seg_E_Pin,seg_F_Pin,seg_G_Pin};
+const GPIO_TypeDef* seg_Ports[] = {seg_G_Port, seg_F_Port, seg_E_Port, seg_D_Port, seg_C_Port, seg_B_Port, seg_A_Port, seg_DP_Port};
+const uint32_t seg_Pins[] = {seg_G_Pin, seg_F_Pin, seg_E_Pin, seg_D_Pin, seg_C_Pin, seg_B_Pin, seg_A_Pin, seg_DP_Pin};
 
-GPIO_TypeDef* dig_Ports[] = {dig_1_Port,dig_2_Port,dig_3_Port,dig_4_Port};
-uint32_t dig_Pins[] = {dig_1_Pin,dig_2_Pin,dig_3_Pin,dig_4_Pin};
+const GPIO_TypeDef* dig_Ports[] = {dig_1_Port,dig_2_Port,dig_3_Port,dig_4_Port};
+const uint32_t dig_Pins[] = {dig_1_Pin,dig_2_Pin,dig_3_Pin,dig_4_Pin};
 
 //functions to handle multiplexing of the currently displaying alphanum char
-void updAlphanumChar(uint8_t seg_Val);
+void updateAlphanumChar(uint8_t seg_Val);
 void setDigit(uint8_t pos);
-void resAllSegments();
-void resAllDigits();
+void resetAllSegments();
+void resetAllDigits();
 
 //functions to handle shifting of the currently displaying string
-void updCurPos(uint8_t *prevPos, uint8_t shiftDir);
-void updShiftDir(uint8_t curPos, uint8_t *shiftDir);
+void updateCurPos(uint8_t *prevPos, uint8_t shiftDir);
+void updateShiftDir(uint8_t curPos, uint8_t *shiftDir);
 void setCurStr(uint8_t curPos);
 
 //functions to handle multiplexing of the currently displaying alphanum char
 void DISPLAY_displayCurStr(){
 	static uint8_t curActDig = 0;
-	resAllDigits();
+	resetAllDigits();
 
-	updAlphanumChar( segVal_ASCII[ toupper(curStr[curActDig]) - '0'] );
-	setDigit(curActDig % 4);
+	updateAlphanumChar( segVal_ASCII[ toupper(curStr[curActDig]) - '0'] );
+	setDigit(curActDig);
 	curActDig++;
+	curActDig %= 4;
 }
 
-void updAlphanumChar(uint8_t segmentValues){
-	resAllSegments();
+void updateAlphanumChar(uint8_t segmentValues){
+	resetAllSegments();
 	for(int i = 0; i<(NUM_SEG-1); i++){
-		if(segmentValues & 1<<i) LL_GPIO_ResetOutputPin(seg_Ports[i], seg_Pins[i]);
+		if(segmentValues & (0x01<<i)) LL_GPIO_ResetOutputPin((GPIO_TypeDef*)seg_Ports[i], (uint32_t)seg_Pins[i]);
 	}
-}
+	}
 
 //Turns required digit ON
 void setDigit(uint8_t pos){
-	LL_GPIO_SetOutputPin(dig_Ports[pos], dig_Pins[pos]);
+	LL_GPIO_SetOutputPin((GPIO_TypeDef*)dig_Ports[pos], (uint32_t)dig_Pins[pos]);
 }
 
 /*Reset (turn-off) all the segments of display*/
-void resAllSegments(){
-	for(int i = 0; i<(NUM_SEG-1); i++){
-		LL_GPIO_SetOutputPin(seg_Ports[i], seg_Pins[i]);
+void resetAllSegments(){
+	for(int i = 0; i<NUM_SEG; i++){
+		LL_GPIO_SetOutputPin((GPIO_TypeDef*)seg_Ports[i], (uint32_t)seg_Pins[i]);
 	}
 }
 
 /* Reset (turn-off) all digits*/
-void resAllDigits(void)
+void resetAllDigits(void)
 {
-	for(int i = 0; i<(NUM_DIG-1); i++){
-		LL_GPIO_ResetOutputPin(dig_Ports[i], dig_Pins[i]);
+	for(int i = 0; i<NUM_DIG; i++){
+		LL_GPIO_ResetOutputPin((GPIO_TypeDef*)dig_Ports[i], (uint32_t)dig_Pins[i]);
 	}
 }
 
@@ -87,22 +89,22 @@ void DISPLAY_shiftCurStr(){
 	static uint8_t curPos = 0;
 	static uint8_t shiftDir = LEFT_TO_RIGHT;
 
-	updCurPos(&curPos, shiftDir);
-	updShiftDir(curPos, &shiftDir);
+	updateCurPos(&curPos, shiftDir);
+	updateShiftDir(curPos, &shiftDir);
 	setCurStr(curPos);
 }
 
-void updCurPos(uint8_t *prevPos, uint8_t shiftDir){
+void updateCurPos(uint8_t *prevPos, uint8_t shiftDir){
 	shiftDir == LEFT_TO_RIGHT ? (*prevPos)++ : (*prevPos)--;
 }
 
-void updShiftDir(uint8_t curPos, uint8_t *shiftDir){
+void updateShiftDir(uint8_t curPos, uint8_t *shiftDir){
 	if(curPos >= (complStrLen - NUM_DIG)){
-		*shiftDir =  LEFT_TO_RIGHT;
+		*shiftDir =  RIGHT_TO_LEFT;
 	}
 
 	if(curPos <= 0){
-		*shiftDir = RIGHT_TO_LEFT;
+		*shiftDir = LEFT_TO_RIGHT;
 	}
 }
 
@@ -113,7 +115,7 @@ void setCurStr(uint8_t curPos){
 }
 
 //Function to change the complete string which is continuously being displayed on the display
-void DISPLAY_setCompStr(char *newComplStr){
+void DISPLAY_setCompStr(uint8_t *newComplStr){
 	//TODO
 }
 

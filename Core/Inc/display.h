@@ -12,7 +12,7 @@
 #include "stm32f3xx_ll_gpio.h"
 #include <ctype.h>
 
-#define NUM_DIG 4 //number of display digs
+#define NUM_DIG 4 //number of display digs representing numbers
 #define NUM_SEG 8 //number of segments per digit
 #define LEFT_TO_RIGHT 1
 #define RIGHT_TO_LEFT 0
@@ -50,4 +50,4 @@
 //functions
 void DISPLAY_displayCurStr();
 void DISPLAY_shiftCurStr();
-void DISPLAY_setCompStr(char *newComplStr);
+void DISPLAY_setCompStr(uint8_t *newComplStr);
